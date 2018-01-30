@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Stellar Wallet",
+    "description":
+      "Lightweight app to send and receive lumens over the Stellar network.",
+    "slug": "stellar-wallet",
+    "privacy": "unlisted",
+    "sdkVersion": "23.0.0",
+    "platforms": ["ios"],
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "icon": "./src/assets/icon.png",
+    "splash": {
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": false
+    }
+  }
+}
