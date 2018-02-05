@@ -16,7 +16,6 @@ import { DangerZone, Permissions, BarCodeScanner, Fingerprint } from "expo";
 import { FontAwesome } from "@expo/vector-icons";
 import { Typo, Input } from "../components";
 import { prettyNumber } from "../helpers";
-import store from "../store";
 import { observer } from "mobx-react";
 
 const { Lottie } = DangerZone;
@@ -38,13 +37,18 @@ export default class extends React.Component {
     scannerActive: false
   };
 
+  constructor(props) {
+    super(props);
+    this.store = props.screenProps.store;
+  }
+
   successAnim = new Animated.Value(0);
 
   onSubmit = () => {
     const { amount, destinationId, memo, sending } = this.state;
     if (!amount || destinationId.length !== PKEY_LENGTH || sending) return;
 
-    if (!store.touchIdEnabled) {
+    if (!this.store.touchIdEnabled) {
       return this.sendMoney();
     }
 
@@ -62,7 +66,7 @@ export default class extends React.Component {
 
     this.setState({ sending: true });
 
-    store
+    this.store
       .sendMoney({
         amount,
         destinationId,
@@ -95,7 +99,7 @@ export default class extends React.Component {
     const { amount, destinationId, memo } = this.state;
     this.setState({ sending: true });
 
-    store
+    this.store
       .fundAccount({
         amount,
         destinationId,
@@ -122,7 +126,7 @@ export default class extends React.Component {
 
   setAmount = () => {
     this.setState({
-      amount: store.account.nativeBalanceNumber.toString()
+      amount: this.store.account.nativeBalanceNumber.toString()
     });
 
     if (this.amountInput && this.amountInput.focus) this.amountInput.focus();
@@ -197,7 +201,7 @@ export default class extends React.Component {
               <Typo.L>
                 Balance:{" "}
                 <Typo.Link onPress={this.setAmount}>
-                  {store.account.nativeBalance} XLM
+                  {this.store.account.nativeBalance} XLM
                 </Typo.Link>
               </Typo.L>
             </View>
@@ -216,10 +220,10 @@ export default class extends React.Component {
               <Typo.T style={styles.amountConverter}>
                 ~{" "}
                 {prettyNumber(
-                  store.ticker.price *
+                  this.store.ticker.price *
                     parseFloat(this.state.amount.replace(",", "."))
                 )}{" "}
-                {store.ticker.currency}
+                {this.store.ticker.currency}
               </Typo.T>
             </View>
           </View>

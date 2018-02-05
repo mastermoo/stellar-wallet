@@ -1,7 +1,6 @@
 import React from "react";
 import {
   StyleSheet,
-  Text,
   ScrollView,
   View,
   Button,
@@ -10,7 +9,6 @@ import {
 } from "react-native";
 import StellarSdk from "stellar-sdk";
 import { Input, Typo } from "../components";
-import store from "../store";
 
 export default class extends React.Component {
   static navigationOptions = {
@@ -30,7 +28,7 @@ export default class extends React.Component {
 
     this.setState({ loading: true });
 
-    store
+    this.props.screenProps.store
       .addAccount({
         name,
         secret
@@ -39,7 +37,7 @@ export default class extends React.Component {
         this.setState({ loading: false });
         this.props.navigation.goBack();
       })
-      .catch(error => {
+      .catch((error: any) => {
         this.setState({ loading: false });
         alert(error);
       });
@@ -87,7 +85,7 @@ export default class extends React.Component {
           />
         )}
 
-        <Typo.T style={{ marginTop: 50 }}>
+        <Typo.T style={{ marginTop: 40 }}>
           To generate a new keypair,{" "}
           <Typo.Link
             onPress={() => {

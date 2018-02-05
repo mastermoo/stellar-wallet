@@ -1,19 +1,16 @@
 import React from "react";
-import {
-  StyleSheet,
-  ScrollView,
-  Text,
-  View,
-  TouchableOpacity,
-  Linking
-} from "react-native";
+import { StyleSheet, Linking, View } from "react-native";
 import moment from "moment";
 import { observer } from "mobx-react";
 import { Cell, Loader, Table, Typo } from "../components";
-import store from "../store";
+
+export interface PaymentProps {
+  navigation: any;
+  screenProps: any;
+}
 
 @observer
-export default class extends React.Component {
+export default class extends React.Component<PaymentProps> {
   static navigationOptions = {
     title: "Payment Details"
   };
@@ -27,14 +24,18 @@ export default class extends React.Component {
     const { payment } = this.props.navigation.state.params;
     this.setState({ loading: true });
 
-    store.fetchPayment(payment.transaction_hash).then(result => {
-      const tx = JSON.parse(JSON.stringify(result));
-      // console.log("Transaction fetched!", tx);
-      this.setState({
-        loading: false,
-        transaction: tx
+    this.props.screenProps.store.server
+      .transactions()
+      .transaction(payment.transaction_hash)
+      .call()
+      .then((result: any) => {
+        const tx = JSON.parse(JSON.stringify(result));
+        // console.log("Transaction fetched!", tx);
+        this.setState({
+          loading: false,
+          transaction: tx
+        });
       });
-    });
   }
 
   render() {
@@ -42,14 +43,17 @@ export default class extends React.Component {
 
     const { transaction } = this.state;
     const { payment } = this.props.navigation.state.params;
-    const received = payment.to === store.activeAccountId;
+    const received =
+      payment.to === this.props.screenProps.store.activeAccountId;
+
+    if (!transaction) return <View />;
 
     return (
       <Table.TableView>
         <Table.Section>
           <Cell
             title="Message"
-            detail={
+            renderDetail={
               <Typo.Detail>{transaction.memo || "No Message"}</Typo.Detail>
             }
           />
@@ -63,7 +67,7 @@ export default class extends React.Component {
             detail={payment.transaction_hash}
             detailCopiable
           />
-          {payment.asset_issuer && (
+          {!!payment.asset_issuer && (
             <Cell
               title="Asset issuer"
               detail={payment.asset_issuer}
@@ -91,14 +95,4 @@ export default class extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingVertical: 30,
-    paddingHorizontal: 20
-  },
-  rowInfo: {
-    marginBottom: 15
-  }
-});
+StyleSheet.create({});

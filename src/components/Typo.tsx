@@ -1,37 +1,37 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
-const Sub = props => (
+const Sub = (props: any) => (
   <Text style={[styles.sub, props.style]}>{props.children}</Text>
 );
 
-const Title = props => (
+const Title = (props: any) => (
   <Text style={[styles.title, props.style]}>{props.children}</Text>
 );
 
-const L = props => (
+const L = (props: any) => (
   <Text style={[styles.label, props.style]}>{props.children}</Text>
 );
 
-const T = props => (
+const T = (props: any) => (
   <Text style={[styles.text, props.style]}>{props.children}</Text>
 );
 
-const H = props => (
+const H = (props: any) => (
   <Text style={[styles.headline, props.style]}>{props.children}</Text>
 );
 
-const Green = props => (
+const Green = (props: any) => (
   <Text style={[styles.green, props.style]}>{props.children}</Text>
 );
 
-const Detail = props => (
+const Detail = (props: any) => (
   <Text {...props} style={[styles.detail, props.style]}>
     {props.children}
   </Text>
 );
 
-const Link = props => (
+const Link = (props: any) => (
   <Text {...props} style={[styles.link, props.style]}>
     {props.children}
   </Text>

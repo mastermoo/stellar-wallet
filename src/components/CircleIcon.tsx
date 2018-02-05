@@ -1,13 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const Send = props => (
+const Send = () => (
   <View style={[styles.wrap, { backgroundColor: "#f5000033" }]}>
     <Ionicons name="md-arrow-up" style={[styles.icon, styles.send]} />
   </View>
 );
-const Deposit = props => (
+const Deposit = () => (
   <View style={[styles.wrap, { backgroundColor: "#00ca5a33" }]}>
     <Ionicons name="md-add" style={[styles.icon, styles.deposit]} />
   </View>

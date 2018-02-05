@@ -1,19 +1,8 @@
 import React from "react";
-import {
-  StyleSheet,
-  ScrollView,
-  Text,
-  View,
-  TouchableOpacity,
-  Switch,
-  AlertIOS,
-  Alert,
-  ActionSheetIOS
-} from "react-native";
+import { Switch, AlertIOS, Alert, ActionSheetIOS } from "react-native";
 import Expo from "expo";
 import { observer } from "mobx-react";
 import { Cell, Table, Typo } from "../components";
-import store from "../store";
 
 const CURRENCIES = ["USD", "EUR", "GBP", "BTC", "ETH"];
 
@@ -26,6 +15,11 @@ export default class extends React.Component {
   state = {
     hasTouchId: false
   };
+
+  constructor(props) {
+    super(props);
+    this.store = props.screenProps.store;
+  }
 
   async componentWillMount() {
     if (
@@ -48,12 +42,12 @@ export default class extends React.Component {
         {
           text: "Done",
           onPress: text => {
-            store.account.name = text;
+            this.store.account.setName(text);
           }
         }
       ],
       "plain-text",
-      store.account.name
+      this.store.account.name
     );
   };
 
@@ -67,7 +61,7 @@ export default class extends React.Component {
           text: "Yes, remove!",
           style: "destructive",
           onPress: () => {
-            store.deleteCurrentAccount();
+            this.store.deleteCurrentAccount();
             this.props.navigation.goBack();
           }
         }
@@ -80,7 +74,7 @@ export default class extends React.Component {
       "Unlock Stellar Wallet with Touch ID"
     ).then(({ success, error }) => {
       if (success) {
-        store.touchIdEnabled = enabled;
+        this.store.setTouchIdEnabled(enabled);
       }
     });
   };
@@ -88,17 +82,17 @@ export default class extends React.Component {
   render() {
     return (
       <Table.TableView>
-        {!!store.account && (
+        {!!this.store.account && (
           <Table.Section header="Wallet info">
             <Cell
               title="Name"
-              detail={store.account.name}
+              detail={this.store.account.name}
               onPress={this.openDialog}
             />
             <Cell title="Network" detail={"Test Network"} />
             <Cell
               title="Account ID"
-              detail={store.account.publicKey}
+              detail={this.store.account.publicKey}
               detailCopiable
             />
             <Cell
@@ -115,14 +109,14 @@ export default class extends React.Component {
               title="TouchID/FaceID"
               detail={
                 <Switch
-                  value={store.touchIdEnabled}
+                  value={this.store.touchIdEnabled}
                   onValueChange={this.validateTouchId}
                 />
               }
             />
             <Cell
               title="Currency Converter"
-              detail={store.ticker.currency}
+              detail={this.store.ticker.currency}
               onPress={this.handleCurrencyMenu}
             />
           </Table.Section>
@@ -140,7 +134,7 @@ export default class extends React.Component {
       },
       buttonIndex => {
         if (buttonIndex > 0) {
-          store.ticker.currency = CURRENCIES[buttonIndex - 1];
+          this.store.ticker.setCurrency(CURRENCIES[buttonIndex - 1]);
         }
       }
     );

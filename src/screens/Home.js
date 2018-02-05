@@ -26,7 +26,6 @@ import {
   Typo
 } from "../components";
 import { prettyNumber } from "../helpers";
-import store from "../store";
 
 @observer
 export default class HomeScreen extends React.Component {
@@ -38,10 +37,15 @@ export default class HomeScreen extends React.Component {
     refreshing: false
   };
 
+  constructor(props) {
+    super(props);
+    this.store = props.screenProps.store;
+  }
+
   onRefresh = () => {
     if (this.state.refreshing) return;
     this.setState({ refreshing: true });
-    store
+    this.store.account
       .fetchPayments()
       .then(this.accountFetched)
       .catch(error => {
@@ -55,7 +59,7 @@ export default class HomeScreen extends React.Component {
 
   fundAccount = () => {
     const friendbotURL = "https://horizon-testnet.stellar.org/friendbot";
-    fetch(`${friendbotURL}?addr=${store.activeAccountId}`)
+    fetch(`${friendbotURL}?addr=${this.store.account.publicKey}`)
       .then(this.onRefresh)
       .catch(() => {
         alert("Hmmm, that didn't work somehow...");
@@ -63,7 +67,7 @@ export default class HomeScreen extends React.Component {
   };
 
   render() {
-    if (store.accounts.length <= 0)
+    if (this.store.accounts.values().length <= 0)
       return (
         <View style={styles.emptyContainer}>
           <Typo.H style={{ marginBottom: 20, textAlign: "center" }}>
@@ -84,7 +88,7 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         {this._renderNavigationBar()}
-        {store.account.isUnfunded ? (
+        {this.store.account.isUnfunded ? (
           <ScrollView
             contentContainerStyle={{
               justifyContent: "center",
@@ -119,7 +123,7 @@ export default class HomeScreen extends React.Component {
           <View style={styles.container}>
             <SectionList
               style={styles.listContainer}
-              sections={store.account.paymentsGrouped}
+              sections={this.store.account.paymentsGrouped}
               keyExtractor={(item, idx) => idx}
               onRefresh={this.onRefresh}
               refreshing={this.state.refreshing}
@@ -149,10 +153,10 @@ export default class HomeScreen extends React.Component {
           >
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.navigationBarTitle}>
-                {store.account.name}
+                {this.store.account.name}
               </Text>
 
-              {store.accounts.length > 1 && (
+              {this.store.accounts.values().length > 1 && (
                 <View style={styles.navigationBarArrow}>
                   <FontAwesome
                     name="angle-down"
@@ -190,7 +194,7 @@ export default class HomeScreen extends React.Component {
     );
   }
 
-  _renderBalance() {
+  _renderBalance = () => {
     return (
       <ScrollView
         horizontal
@@ -200,7 +204,7 @@ export default class HomeScreen extends React.Component {
         showsHorizontalScrollIndicator={false}
         style={styles.balancesContainer}
       >
-        {_.reverse(store.account.balances).map((balance, idx) => (
+        {this.store.account.balances.slice().map((balance, idx) => (
           <View key={idx} style={styles.balanceContainer}>
             <View style={styles.balanceNumberContainer}>
               <Text style={styles.balanceTitle}>Total Balance</Text>
@@ -214,9 +218,9 @@ export default class HomeScreen extends React.Component {
               {balance.asset_type === "native" && (
                 <Typo.Sub style={{ textAlign: "center" }}>
                   {prettyNumber(
-                    store.ticker.price * parseFloat(balance.balance)
+                    this.store.ticker.price * parseFloat(balance.balance)
                   )}{" "}
-                  {store.ticker.currency}
+                  {this.store.ticker.currency}
                 </Typo.Sub>
               )}
             </View>
@@ -224,11 +228,9 @@ export default class HomeScreen extends React.Component {
         ))}
       </ScrollView>
     );
-  }
+  };
 
   _renderToolbar() {
-    if (store.account.isUnfunded) return null;
-
     return (
       <View style={styles.toolbar}>
         <TouchableOpacity
@@ -255,17 +257,19 @@ export default class HomeScreen extends React.Component {
   }
 
   _handleToggleMenu = () => {
-    if (store.accounts.length <= 1) return;
+    if (this.store.accounts.values().length <= 1) return;
 
     ActionSheetIOS.showActionSheetWithOptions(
       {
-        options: ["Cancel"].concat(store.accounts.map(o => o.name)),
+        options: ["Cancel"].concat(
+          this.store.accounts.values().map(o => o.name)
+        ),
         cancelButtonIndex: 0,
         title: "Switch account"
       },
       buttonIndex => {
         if (buttonIndex > 0) {
-          store.setActiveAccount(store.accounts[buttonIndex - 1]);
+          this.store.setAccount(this.store.accounts.values()[buttonIndex - 1]);
         }
       }
     );

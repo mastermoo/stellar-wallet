@@ -9,26 +9,28 @@ import {
 } from "react-native";
 import { Typo } from "./";
 
-export default ({
-  title,
-  detail,
-  renderDetail,
-  onPress,
-  type,
-  hideAccessory,
-  detailCopiable
-}) => {
-  const isDanger = type === "danger";
-  hideAccessory = isDanger ? true : hideAccessory;
+export interface CellProps {
+  title: string;
+  detail?: string;
+  renderDetail?: JSX.Element;
+  onPress?: any;
+  type?: string;
+  hideAccessory?: boolean;
+  detailCopiable?: boolean;
+}
+
+export default (props: CellProps) => {
+  const isDanger = props.type === "danger";
+  const hideAccessory = isDanger ? true : props.hideAccessory;
 
   return (
     <TouchableHighlight
-      disabled={!onPress && !detailCopiable}
+      disabled={!props.onPress && !props.detailCopiable}
       underlayColor="rgba(0,0,0,0.35)"
-      onPress={onPress}
+      onPress={props.onPress}
       onLongPress={() => {
-        if (detailCopiable) {
-          Clipboard.setString(detail);
+        if (props.detailCopiable && props.detail) {
+          Clipboard.setString(props.detail);
           Alert.alert("Copied!");
         }
       }}
@@ -38,22 +40,24 @@ export default ({
           numberOfLines={1}
           style={[styles.title, isDanger && styles.dangerTitle]}
         >
-          {title}
+          {props.title}
         </Text>
 
-        {typeof detail === "string" ? (
+        {!!props.detail && (
           <Typo.Detail
             numberOfLines={1}
             ellipsizeMode="middle"
             style={{ flex: 1 }}
           >
-            {detail}
+            {props.detail}
           </Typo.Detail>
-        ) : (
-          detail && <View style={styles.detailWrap}>{detail}</View>
         )}
 
-        {onPress && !hideAccessory && <View style={styles.accessory} />}
+        {!!props.renderDetail && (
+          <View style={styles.detailWrap}>{props.renderDetail}</View>
+        )}
+
+        {props.onPress && !hideAccessory && <View style={styles.accessory} />}
       </View>
     </TouchableHighlight>
   );

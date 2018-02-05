@@ -9,10 +9,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import QRCode from "react-native-qrcode-svg";
-import { CircleIcon, Typo } from "../components";
-import store from "../store";
+import { Typo } from "../components";
 
-const marginBottom = value => ({
+const marginBottom = (value: number) => ({
   marginBottom: value
 });
 
@@ -26,11 +25,14 @@ export default class extends React.Component {
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <View style={marginBottom(20)}>
-            <QRCode size={200} value={store.activeAccountId} />
+            <QRCode
+              size={200}
+              value={this.props.screenProps.store.account.publicKey}
+            />
           </View>
           <Typo.H style={marginBottom(10)}>You wallet address is:</Typo.H>
           <Typo.T style={{ marginBottom: 10, textAlign: "center" }}>
-            {store.activeAccountId}
+            {this.props.screenProps.store.account.publicKey}
           </Typo.T>
           <TouchableOpacity
             onPress={this.shareAddress}
@@ -47,7 +49,9 @@ export default class extends React.Component {
   shareAddress = () => {
     Share.share({
       title: "My XLM Address",
-      message: `This is my wallet address: ${store.activeAccountId}`
+      message: `This is my XLM wallet address: ${
+        this.props.screenProps.store.account.publicKey
+      }`
     });
   };
 }
@@ -62,8 +66,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 40,
     paddingHorizontal: 20
-    // borderBottomWidth: StyleSheet.hairlineWidth,
-    // borderBottomColor: "#ddd"
   },
   shareButton: {
     paddingVertical: 2,

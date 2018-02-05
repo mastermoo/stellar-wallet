@@ -3,17 +3,22 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import moment from "moment";
 import { Typo, CircleIcon } from "./";
 import { prettyNumber } from "../helpers";
-import store from "../store";
 
-export default class PaymentRow extends React.Component {
+export interface PaymentRowProps {
+  screenProps: any;
+  navigation: any;
+  payment: any;
+}
+
+export default class PaymentRow extends React.Component<PaymentRowProps> {
   visitDetails = () => {
     this.props.navigation.navigate("Payment", { payment: this.props.payment });
   };
 
   render() {
-    const { payment } = this.props;
+    const { payment, screenProps } = this.props;
     const amount = prettyNumber(payment.amount);
-    const received = payment.to === store.activeAccountId;
+    const received = payment.to === screenProps.store.account.publicKey;
     const currency =
       payment.asset_type === "native" ? "XLM" : payment.asset_code;
 
@@ -31,9 +36,7 @@ export default class PaymentRow extends React.Component {
             <Typo.Title>
               {received ? "Received" : "Sent"} {currency}
             </Typo.Title>
-            <Typo.Sub style={styles.sub}>
-              {moment(payment.created_at).format("LL")}
-            </Typo.Sub>
+            <Typo.Sub>{moment(payment.created_at).format("LL")}</Typo.Sub>
           </View>
           <Text
             style={[

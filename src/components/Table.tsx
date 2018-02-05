@@ -1,17 +1,12 @@
 import React from "react";
-import {
-  StyleSheet,
-  ScrollView,
-  View,
-  TouchableHighlight,
-  Text,
-  TextInput
-} from "react-native";
+import { StyleSheet, ScrollView, View, Text } from "react-native";
 import _ from "lodash";
 import { Separator } from "./";
 
-export const TableView = props => {
-  const children = _.concat([], props.children).filter(section => !!section);
+export const TableView = (props: any) => {
+  const children = _.concat([], props.children).filter(
+    (section: any) => !!section
+  );
 
   return (
     <ScrollView style={styles.container} {...props}>
@@ -20,23 +15,26 @@ export const TableView = props => {
   );
 };
 
-export const Section = ({
-  children,
-  borders = true,
-  spacing = true,
-  header
-}) => {
-  children = _.concat([], children).filter(cell => !!cell);
+export interface SectionProps {
+  children: any;
+  borders?: boolean;
+  spacing?: boolean;
+  header?: string;
+}
+
+export const Section = (props: SectionProps) => {
+  const { borders = true, spacing = true } = props;
+  const children = _.concat([], props.children).filter((cell: any) => !!cell);
 
   return (
-    <View style={[styles.section, spacing && styles.sectionSpacing]}>
-      {header && (
+    <View style={[spacing && styles.sectionSpacing]}>
+      {props.header && (
         <View style={styles.header}>
-          <Text style={styles.headerText}>{header.toUpperCase()}</Text>
+          <Text style={styles.headerText}>{props.header.toUpperCase()}</Text>
         </View>
       )}
       <View style={[borders && styles.sectionBorders]}>
-        {_.flatten(children).map((Cell, idx) => (
+        {_.flatten(children).map((Cell: any, idx: number) => (
           <View key={idx}>
             {Cell}
             {idx < children.length - 1 && <Separator />}
