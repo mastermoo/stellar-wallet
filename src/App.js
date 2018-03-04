@@ -30,7 +30,7 @@ export default class App extends React.Component {
       savedState = await Expo.SecureStore.getItemAsync(STORAGE_KEY);
       const initialState = !!savedState ? JSON.parse(savedState) : emptyState;
 
-      console.log(savedState);
+      // console.log(savedState);
       store = RootStore.create(initialState);
     } catch (e) {
       console.log(error);
