@@ -1,6 +1,5 @@
 import { types, flow } from "mobx-state-tree";
 import StellarSdk from "stellar-sdk";
-// import Expo from "expo";
 import Account from "./account";
 import Ticker from "./ticker";
 
@@ -13,12 +12,19 @@ const Root = types
   })
   .views(self => ({
     get server() {
+      if (true) {
+        return new StellarSdk.Server("https://horizon.stellar.org");
+      }
       return new StellarSdk.Server("https://horizon-testnet.stellar.org");
     }
   }))
   .actions(self => ({
     afterCreate() {
-      StellarSdk.Network.useTestNetwork();
+      if (true) {
+        StellarSdk.Network.usePublicNetwork();
+      } else {
+        StellarSdk.Network.useTestNetwork();
+      }
       self.ticker.fetchData();
     },
 

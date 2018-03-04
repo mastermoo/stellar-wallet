@@ -51,6 +51,9 @@ const Account = types
   }))
   .views(self => ({
     get server() {
+      if (true) {
+        return new StellarSdk.Server("https://horizon.stellar.org");
+      }
       return new StellarSdk.Server("https://horizon-testnet.stellar.org");
     },
 
